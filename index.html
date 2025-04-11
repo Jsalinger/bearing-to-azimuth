@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bearing to Azimuth Converter</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 1rem;
+      width: 100%;
+      font-size: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #output {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bearing to Azimuth Converter</h1>
+  <input type="text" id="bearingInput" placeholder="e.g. S 89d 06' 30&quot; E" />
+  <button onclick="convertBearing()">Convert</button>
+  <div id="output"></div>
+
+  <script>
+    function convertBearing() {
+      const input = document.getElementById("bearingInput").value.trim();
+      const match = input.match(/([NS])\s*(\d+)d\s*(\d+)'\s*(\d+)[\"]\s*([EW])/i);
+      const output = document.getElementById("output");
+
+      if (!match) {
+        output.innerText = "Invalid format. Use something like: S 89d 06' 30\" E";
+        return;
+      }
+
+      const [, ns, deg, min, sec, ew] = match;
+      const angle = parseInt(deg) + parseInt(min) / 60 + parseInt(sec) / 3600;
+
+      let azimuth;
+      if (ns.toUpperCase() === 'N' && ew.toUpperCase() === 'E') {
+        azimuth = angle;
+      } else if (ns.toUpperCase() === 'S' && ew.toUpperCase() === 'E') {
+        azimuth = 180 - angle;
+      } else if (ns.toUpperCase() === 'S' && ew.toUpperCase() === 'W') {
+        azimuth = 180 + angle;
+      } else if (ns.toUpperCase() === 'N' && ew.toUpperCase() === 'W') {
+        azimuth = 360 - angle;
+      } else {
+        output.innerText = "Invalid direction combination.";
+        return;
+      }
+
+      output.innerText = `Azimuth: ${azimuth.toFixed(6)}°`;
+    }
+  </script>
+</body>
+</html>
