@@ -205,23 +205,24 @@
              ondragover="dragOver(event)" ondrop="drop(event)">
           <span class="output-text">${item.bearingStr} → ${item.azimuthStr}</span>
           <div>
-            <button class="copy-btn" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
+            <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
             <button class="remove-btn" onclick="removeEntry(${index})">×</button>
           </div>
-          <span class="copied-label" id="copied-${index}" style="display:none;">Copied!</span>
         </div>
       `).join('');
     }
 
     function copyToClipboard(text, index) {
       navigator.clipboard.writeText(text).then(() => {
-        if (lastCopiedIndex !== null) {
-          const lastLabel = document.getElementById(`copied-${lastCopiedIndex}`);
-          if (lastLabel) lastLabel.style.display = 'none';
+        // Revert all buttons back to "Copy"
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        copyButtons.forEach(button => button.textContent = 'Copy');
+
+        // Change the clicked button to "Copied"
+        const copiedButton = document.getElementById(`copy-btn-${index}`);
+        if (copiedButton) {
+          copiedButton.textContent = 'Copied';
         }
-        const label = document.getElementById(`copied-${index}`);
-        if (label) label.style.display = 'inline';
-        lastCopiedIndex = index;
       });
     }
 
