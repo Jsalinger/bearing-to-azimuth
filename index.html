@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,16 +14,26 @@
       max-width: 600px;
       margin: auto;
     }
+
     h1 {
       font-size: 1.5rem;
       text-align: center;
     }
-    input[type="text"] {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
     }
+
+    select,
+    input[type="number"] {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 1rem;
+    }
+
     button {
       margin-top: 1rem;
       padding: 1rem;
@@ -33,52 +44,110 @@
       border: none;
       cursor: pointer;
     }
+
     button:hover {
       background: #45a049;
     }
-    #output {
+
+    .output-container {
       margin-top: 2rem;
-      font-size: 1.2rem;
       text-align: center;
+    }
+
+    .output-line {
+      margin: 0.5rem 0;
+      background: #fff;
+      padding: 0.75rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .output-text {
+      font-size: 1.1rem;
+    }
+
+    .copy-btn {
+      background: #2196F3;
+      border: none;
+      color: white;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-radius: 4px;
+    }
+
+    .copy-btn:hover {
+      background: #1976D2;
     }
   </style>
 </head>
+
 <body>
   <h1>Bearing to Azimuth Converter</h1>
-  <input type="text" id="bearingInput" placeholder="e.g. S 89d 06' 30&quot; E" />
+  <div class="input-group">
+    <select id="nsSelect">
+      <option value="N">N</option>
+      <option value="S">S</option>
+    </select>
+    <input type="number" id="deg" placeholder="Degrees" min="0" max="90" />
+    <input type="number" id="min" placeholder="Minutes" min="0" max="59" />
+    <input type="number" id="sec" placeholder="Seconds" min="0" max="59" />
+    <select id="ewSelect">
+      <option value="E">E</option>
+      <option value="W">W</option>
+    </select>
+  </div>
   <button onclick="convertBearing()">Convert</button>
-  <div id="output"></div>
+  <div class="output-container" id="output"></div>
 
   <script>
+    const outputContainer = document.getElementById("output");
+    const history = [];
+
     function convertBearing() {
-      const input = document.getElementById("bearingInput").value.trim();
-      const match = input.match(/([NS])\s*(\d+)d\s*(\d+)'\s*(\d+)[\"]\s*([EW])/i);
-      const output = document.getElementById("output");
+      const ns = document.getElementById("nsSelect").value;
+      const ew = document.getElementById("ewSelect").value;
+      const deg = parseInt(document.getElementById("deg").value) || 0;
+      const min = parseInt(document.getElementById("min").value) || 0;
+      const sec = parseInt(document.getElementById("sec").value) || 0;
 
-      if (!match) {
-        output.innerText = "Invalid format. Use something like: S 89d 06' 30\" E";
+      if (deg > 90 || min >= 60 || sec >= 60 || deg < 0 || min < 0 || sec < 0) {
+        outputContainer.innerHTML = `<div class="output-line"><span class="output-text">Invalid input values.</span></div>`;
         return;
       }
 
-      const [, ns, deg, min, sec, ew] = match;
-      const angle = parseInt(deg) + parseInt(min) / 60 + parseInt(sec) / 3600;
-
+      const angle = deg + min / 60 + sec / 3600;
       let azimuth;
-      if (ns.toUpperCase() === 'N' && ew.toUpperCase() === 'E') {
-        azimuth = angle;
-      } else if (ns.toUpperCase() === 'S' && ew.toUpperCase() === 'E') {
-        azimuth = 180 - angle;
-      } else if (ns.toUpperCase() === 'S' && ew.toUpperCase() === 'W') {
-        azimuth = 180 + angle;
-      } else if (ns.toUpperCase() === 'N' && ew.toUpperCase() === 'W') {
-        azimuth = 360 - angle;
-      } else {
-        output.innerText = "Invalid direction combination.";
+      if (ns === 'N' && ew === 'E') azimuth = angle;
+      else if (ns === 'S' && ew === 'E') azimuth = 180 - angle;
+      else if (ns === 'S' && ew === 'W') azimuth = 180 + angle;
+      else if (ns === 'N' && ew === 'W') azimuth = 360 - angle;
+      else {
+        outputContainer.innerHTML = `<div class="output-line"><span class="output-text">Invalid direction combination.</span></div>`;
         return;
       }
 
-      output.innerText = `Azimuth: ${azimuth.toFixed(6)}°`;
+      const bearingStr = `${ns} ${deg}° ${min}' ${sec}" ${ew}`;
+      const azimuthStr = `Azimuth: ${azimuth.toFixed(6)}°`;
+      const resultHTML = `
+        <div class="output-line">
+          <span class="output-text">${bearingStr} → ${azimuthStr}</span>
+          <button class="copy-btn" onclick="copyToClipboard('${azimuth.toFixed(6)}')">Copy</button>
+        </div>`;
+
+      history.unshift(resultHTML);
+      outputContainer.innerHTML = history.join('');
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard: " + text);
+      });
     }
   </script>
 </body>
+
 </html>
