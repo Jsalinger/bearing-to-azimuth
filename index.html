@@ -8,10 +8,10 @@
   <style>
     body {
       font-family: sans-serif;
-      padding: 2rem;
+      padding: 1rem;
       background: #f5f5f5;
       color: #333;
-      max-width: 600px;
+      max-width: 100%;
       margin: auto;
     }
 
@@ -22,16 +22,17 @@
 
     .input-group {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
       margin-top: 1rem;
-      flex-wrap: wrap;
     }
 
     select,
     input[type="number"] {
-      flex: 1;
+      flex: 1 1 40%;
       padding: 0.75rem;
       font-size: 1rem;
+      min-width: 100px;
     }
 
     button {
@@ -51,7 +52,6 @@
 
     .output-container {
       margin-top: 2rem;
-      text-align: center;
     }
 
     .output-line {
@@ -61,12 +61,21 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 480px) {
+      .output-line {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
     }
 
     .output-text {
       font-size: 1.1rem;
+      word-break: break-word;
     }
 
     .copy-btn {
@@ -81,6 +90,12 @@
 
     .copy-btn:hover {
       background: #1976D2;
+    }
+
+    .copied-label {
+      font-size: 0.9rem;
+      color: #4CAF50;
+      margin-left: 0.5rem;
     }
   </style>
 </head>
@@ -106,6 +121,7 @@
   <script>
     const outputContainer = document.getElementById("output");
     const history = [];
+    let lastCopiedIndex = null;
 
     function convertBearing() {
       const ns = document.getElementById("nsSelect").value;
@@ -132,19 +148,30 @@
 
       const bearingStr = `${ns} ${deg}° ${min}' ${sec}" ${ew}`;
       const azimuthStr = `Azimuth: ${azimuth.toFixed(6)}°`;
+      const index = history.length;
+
       const resultHTML = `
-        <div class="output-line">
+        <div class="output-line" data-index="${index}">
           <span class="output-text">${bearingStr} → ${azimuthStr}</span>
-          <button class="copy-btn" onclick="copyToClipboard('${azimuth.toFixed(6)}')">Copy</button>
+          <div>
+            <button class="copy-btn" onclick="copyToClipboard('${azimuth.toFixed(6)}', ${index})">Copy</button>
+            <span class="copied-label" id="copied-${index}" style="display:none;">Copied!</span>
+          </div>
         </div>`;
 
       history.unshift(resultHTML);
       outputContainer.innerHTML = history.join('');
     }
 
-    function copyToClipboard(text) {
+    function copyToClipboard(text, index) {
       navigator.clipboard.writeText(text).then(() => {
-        alert("Copied to clipboard: " + text);
+        if (lastCopiedIndex !== null) {
+          const lastLabel = document.getElementById(`copied-${lastCopiedIndex}`);
+          if (lastLabel) lastLabel.style.display = 'none';
+        }
+        const label = document.getElementById(`copied-${index}`);
+        if (label) label.style.display = 'inline';
+        lastCopiedIndex = index;
       });
     }
   </script>
