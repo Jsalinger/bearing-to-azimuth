@@ -23,30 +23,52 @@
     .input-group {
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
       gap: 0.75rem;
       margin-top: 1rem;
     }
 
     select,
     input[type="number"] {
-      width: 100%;
-      padding: 0.75rem;
       font-size: 1rem;
+      padding: 0.5rem;
+      width: auto;
+      max-width: 100%;
     }
 
-    button {
+    input[type="number"] {
+      width: 8rem;
+    }
+
+    input::placeholder {
+      opacity: 1;
+    }
+
+    .convert-btn,
+    .export-btn {
       margin-top: 1rem;
-      padding: 1rem;
-      width: 100%;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
       background: #4CAF50;
       color: white;
       border: none;
       cursor: pointer;
+      width: auto;
+      align-self: center;
+      border-radius: 4px;
     }
 
-    button:hover {
+    .export-btn {
+      background: #9C27B0;
+      margin-left: 0.5rem;
+    }
+
+    .convert-btn:hover {
       background: #45a049;
+    }
+
+    .export-btn:hover {
+      background: #7B1FA2;
     }
 
     .output-container {
@@ -60,28 +82,21 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 0.5rem;
-    }
-
-    @media (min-width: 480px) {
-      .output-line {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
+      align-items: center;
     }
 
     .output-text {
       font-size: 1.1rem;
-      word-break: break-word;
+      white-space: nowrap;
     }
 
     .copy-btn {
       background: #2196F3;
       border: none;
       color: white;
-      padding: 0.5rem 0.75rem;
+      padding: 0.4rem 0.75rem;
       cursor: pointer;
       font-size: 0.9rem;
       border-radius: 4px;
@@ -89,6 +104,21 @@
 
     .copy-btn:hover {
       background: #1976D2;
+    }
+
+    .remove-btn {
+      background: #f44336;
+      border: none;
+      color: white;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-radius: 50%;
+      line-height: 1;
+    }
+
+    .remove-btn:hover {
+      background: #d32f2f;
     }
 
     .copied-label {
@@ -102,19 +132,32 @@
 <body>
   <h1>Bearing to Azimuth Converter</h1>
   <div class="input-group">
-    <select id="nsSelect">
-      <option value="N">N</option>
-      <option value="S">S</option>
-    </select>
-    <input type="number" id="deg" placeholder="Degrees" min="0" max="90" />
-    <input type="number" id="min" placeholder="Minutes" min="0" max="59" />
-    <input type="number" id="sec" placeholder="Seconds" min="0" max="59" />
-    <select id="ewSelect">
-      <option value="E">E</option>
-      <option value="W">W</option>
-    </select>
+    <label>
+      <select id="nsSelect">
+        <option value="N">N</option>
+        <option value="S">S</option>
+      </select>
+    </label>
+    <label>
+      <input type="number" id="deg" placeholder="Degrees" min="0" max="90" />
+    </label>
+    <label>
+      <input type="number" id="min" placeholder="Minutes" min="0" max="59" />
+    </label>
+    <label>
+      <input type="number" id="sec" placeholder="Seconds" min="0" max="59" />
+    </label>
+    <label>
+      <select id="ewSelect">
+        <option value="E">E</option>
+        <option value="W">W</option>
+      </select>
+    </label>
   </div>
-  <button onclick="convertBearing()">Convert</button>
+  <div style="display: flex; justify-content: center; gap: 0.5rem;">
+    <button class="convert-btn" onclick="convertBearing()">Convert</button>
+    <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+  </div>
   <div class="output-container" id="output"></div>
 
   <script>
@@ -149,17 +192,19 @@
       const azimuthStr = `Azimuth: ${azimuth.toFixed(6)}°`;
       const index = history.length;
 
-      const resultHTML = `
-        <div class="output-line" data-index="${index}">
-          <span class="output-text">${bearingStr} → ${azimuthStr}</span>
-          <div>
-            <button class="copy-btn" onclick="copyToClipboard('${azimuth.toFixed(6)}', ${index})">Copy</button>
-            <span class="copied-label" id="copied-${index}" style="display:none;">Copied!</span>
-          </div>
-        </div>`;
+      history.unshift({ bearingStr, azimuthStr });
+      renderHistory();
+    }
 
-      history.unshift(resultHTML);
-      outputContainer.innerHTML = history.join('');
+    function renderHistory() {
+      outputContainer.innerHTML = history.map((item, index) => `
+        <div class="output-line" data-index="${index}">
+          <span class="output-text">${item.bearingStr} → ${item.azimuthStr}</span>
+          <button class="copy-btn" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
+          <button class="remove-btn" onclick="removeEntry(${index})">&times;</button>
+          <span class="copied-label" id="copied-${index}" style="display:none;">Copied!</span>
+        </div>
+      `).join('');
     }
 
     function copyToClipboard(text, index) {
@@ -172,6 +217,23 @@
         if (label) label.style.display = 'inline';
         lastCopiedIndex = index;
       });
+    }
+
+    function removeEntry(index) {
+      history.splice(index, 1);
+      renderHistory();
+    }
+
+    function exportCSV() {
+      const csvContent = "data:text/csv;charset=utf-8,Bearing,Azimuth\n" +
+        history.map(item => `${item.bearingStr},${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}`).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "bearing_azimuth_history.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
