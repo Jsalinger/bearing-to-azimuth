@@ -37,6 +37,30 @@
   <button class="export-btn" onclick="exportToCSV()">Export to CSV</button>
   <div class="output-container" id="output"></div>
 
+  <!-- New Offset Calculator Section -->
+  <div class="offset-calculator">
+    <h2>Calculate Bearing Offset</h2>
+    <div class="input-group">
+      <label>
+        Point 1 Latitude: <input type="number" id="point1Lat" placeholder="Latitude" />
+      </label>
+      <label>
+        Point 1 Longitude: <input type="number" id="point1Lon" placeholder="Longitude" />
+      </label>
+      <label>
+        Point 2 Latitude: <input type="number" id="point2Lat" placeholder="Latitude" />
+      </label>
+      <label>
+        Point 2 Longitude: <input type="number" id="point2Lon" placeholder="Longitude" />
+      </label>
+      <label>
+        Survey Bearing: <input type="number" id="surveyBearing" placeholder="Bearing (°)" />
+      </label>
+    </div>
+    <button class="calculate-offset-btn" onclick="calculateOffset()">Calculate Offset</button>
+    <div class="offset-output" id="offsetOutput"></div>
+  </div>
+
   <script src="js/script.js"></script>
 </body>
 

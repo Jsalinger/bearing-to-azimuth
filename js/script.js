@@ -100,3 +100,43 @@ function removeEntry(index) {
   history.splice(index, 1);
   renderHistory();
 }
+
+// Function to calculate the offset
+function calculateOffset() {
+  const point1Lat = parseFloat(document.getElementById("point1Lat").value);
+  const point1Lon = parseFloat(document.getElementById("point1Lon").value);
+  const point2Lat = parseFloat(document.getElementById("point2Lat").value);
+  const point2Lon = parseFloat(document.getElementById("point2Lon").value);
+  const surveyBearing = parseFloat(document.getElementById("surveyBearing").value);
+
+  if (isNaN(point1Lat) || isNaN(point1Lon) || isNaN(point2Lat) || isNaN(point2Lon) || isNaN(surveyBearing)) {
+    document.getElementById("offsetOutput").innerText = "Please enter valid values for all fields.";
+    return;
+  }
+
+  // Calculate the true bearing between the two points
+  const deltaLon = point2Lon - point1Lon;
+  const y = Math.sin(deltaLon * (Math.PI / 180)) * Math.cos(point2Lat * (Math.PI / 180));
+  const x =
+    Math.cos(point1Lat * (Math.PI / 180)) * Math.sin(point2Lat * (Math.PI / 180)) -
+    Math.sin(point1Lat * (Math.PI / 180)) * Math.cos(point2Lat * (Math.PI / 180)) * Math.cos(deltaLon * (Math.PI / 180));
+  let trueBearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
+
+  // Calculate the offset
+  const offset = trueBearing - surveyBearing;
+
+  // Display the offset
+  document.getElementById("offsetOutput").innerText = `Offset: ${offset.toFixed(6)}°`;
+
+  // Store the offset for use in new bearing calculations
+  window.bearingOffset = offset;
+}
+
+// Function to apply the offset to a bearing
+function applyOffsetToBearing(bearing) {
+  if (typeof window.bearingOffset === "undefined") {
+    alert("Please calculate the offset first.");
+    return bearing;
+  }
+  return (bearing + window.bearingOffset + 360) % 360;
+}

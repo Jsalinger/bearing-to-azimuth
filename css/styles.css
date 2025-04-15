@@ -115,3 +115,24 @@ input::placeholder {
   color: #4CAF50;
   margin-left: 0.5rem;
 }
+
+.offset-calculator {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.offset-calculator h2 {
+  margin-bottom: 10px;
+}
+
+.offset-calculator .input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.offset-output {
+  margin-top: 10px;
+  font-weight: bold;
+}
