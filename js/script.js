@@ -114,19 +114,21 @@ function calculateOffset() {
     return;
   }
 
-  // Calculate the true bearing between the two points
-  const deltaLon = point2Lon - point1Lon;
-  const y = Math.sin(deltaLon * (Math.PI / 180)) * Math.cos(point2Lat * (Math.PI / 180));
-  const x =
-    Math.cos(point1Lat * (Math.PI / 180)) * Math.sin(point2Lat * (Math.PI / 180)) -
-    Math.sin(point1Lat * (Math.PI / 180)) * Math.cos(point2Lat * (Math.PI / 180)) * Math.cos(deltaLon * (Math.PI / 180));
-  let trueBearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
+  // Use GeographicLib to calculate the geodesic inverse problem
+  const geod = GeographicLib.Geodesic.WGS84;
+  const result = geod.Inverse(point1Lat, point1Lon, point2Lat, point2Lon);
+
+  // Extract the true bearing from the result
+  const trueBearing = result.azi1; // Forward azimuth from point1 to point2
+
+  // Normalize the true bearing to 0-360 degrees
+  const normalizedTrueBearing = (trueBearing + 360) % 360;
 
   // Calculate the offset
-  const offset = trueBearing - surveyBearing;
+  const offset = normalizedTrueBearing - surveyBearing;
 
   // Display the offset
-  document.getElementById("offsetOutput").innerText = `Offset: ${offset.toFixed(6)}°`;
+  document.getElementById("offsetOutput").innerText = `Offset: ${offset.toFixed(8)}°`;
 
   // Store the offset for use in new bearing calculations
   window.bearingOffset = offset;
