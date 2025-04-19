@@ -44,8 +44,10 @@ function renderHistory() {
     <div class="output-line" data-index="${index}" draggable="true" 
          ondragstart="dragStart(event, ${index})" 
          ondragover="dragOver(event)" ondrop="drop(event)">
+      <div>
       <div class="output-text">${item.bearingStr}</div>
       <div class="output-text">${item.azimuthStr}</div>
+      </div>
       <div>
         <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
         <button class="adjust-btn" onclick="copyAdjustedAzimuth(${index})">Copy with Offset</button>
