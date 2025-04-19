@@ -44,7 +44,8 @@ function renderHistory() {
     <div class="output-line" data-index="${index}" draggable="true" 
          ondragstart="dragStart(event, ${index})" 
          ondragover="dragOver(event)" ondrop="drop(event)">
-      <span class="output-text">${item.bearingStr} → ${item.azimuthStr}</span>
+      <div class="output-text">${item.bearingStr}</div>
+      <div class="output-text">${item.azimuthStr}</div>
       <div>
         <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
         <button class="remove-btn" onclick="removeEntry(${index})">×</button>
@@ -101,6 +102,8 @@ function removeEntry(index) {
   renderHistory();
 }
 
+const offsetHistory = [];
+
 function calculateOffset() {
   const calculatedAzimuth = parseFloat(document.getElementById("calculatedAzimuth").value);
   const surveyNs = document.getElementById("surveyNsSelect").value;
@@ -128,4 +131,39 @@ function calculateOffset() {
 
   const offsetAzimuth = Math.abs(calculatedAzimuth - surveyAzimuth).toFixed(6);
   document.getElementById("offsetOutput").textContent = `Offset Azimuth: ${offsetAzimuth}°`;
+
+  offsetHistory.unshift({ calculatedAzimuth, surveyAzimuth, offsetAzimuth });
+  renderOffsetHistory();
+}
+
+function renderOffsetHistory() {
+  const offsetHistoryContainer = document.getElementById("offsetHistory");
+  offsetHistoryContainer.innerHTML = offsetHistory.map((item, index) => `
+    <div class="output-line" data-index="${index}" style="display: flex; flex-direction: column; gap: 4px;">
+      <div class="output-text">Calculated: ${item.calculatedAzimuth}°</div>
+      <div class="output-text">Survey: ${item.surveyAzimuth}°</div>
+      <div class="output-text">Offset: ${item.offsetAzimuth}°</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="copy-btn" onclick="copyOffsetToClipboard('${item.offsetAzimuth}', ${index})">Copy</button>
+        <button class="remove-btn" onclick="removeOffsetEntry(${index})">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyOffsetToClipboard(text, index) {
+  navigator.clipboard.writeText(text).then(() => {
+    const copyButtons = document.querySelectorAll('.offset-history .copy-btn');
+    copyButtons.forEach(button => button.textContent = 'Copy');
+
+    const copiedButton = document.querySelector(`.offset-history .output-line[data-index="${index}"] .copy-btn`);
+    if (copiedButton) {
+      copiedButton.textContent = 'Copied';
+    }
+  });
+}
+
+function removeOffsetEntry(index) {
+  offsetHistory.splice(index, 1);
+  renderOffsetHistory();
 }

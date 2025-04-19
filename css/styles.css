@@ -147,3 +147,49 @@ input::placeholder {
   margin-top: 1rem;
   font-weight: bold;
 }
+
+.offset-history {
+  margin-top: 2rem;
+  display: table;
+}
+
+.offset-history .output-line {
+  margin: 0.5rem 0;
+  background: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.offset-history .output-text {
+  font-size: 1.1rem;
+  white-space: nowrap;
+  padding: 2px;
+  flex: 1;
+}
+
+.offset-history .copy-btn,
+.offset-history .remove-btn {
+  background: #2196F3;
+  border: none;
+  color: white;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
+
+.offset-history .copy-btn:hover,
+.offset-history .remove-btn:hover {
+  background: #1976D2;
+}
+
+.offset-history .remove-btn {
+  background: red;
+}
+
+.offset-history .remove-btn:hover {
+  background: darkred;
