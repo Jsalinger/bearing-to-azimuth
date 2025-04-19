@@ -48,6 +48,7 @@ function renderHistory() {
       <div class="output-text">${item.azimuthStr}</div>
       <div>
         <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
+        <button class="adjust-btn" onclick="copyAdjustedAzimuth(${index})">Copy with Offset</button>
         <button class="remove-btn" onclick="removeEntry(${index})">×</button>
       </div>
     </div>
@@ -63,6 +64,27 @@ function copyToClipboard(text, index) {
     if (copiedButton) {
       copiedButton.textContent = 'Copied';
     }
+  });
+}
+
+function copyAdjustedAzimuth(index) {
+  const button = document.querySelectorAll('.adjust-btn')[index];
+  if (offsetHistory.length === 0) {
+    button.textContent = "No offset yet";
+    setTimeout(() => {
+      button.textContent = "Copy with Offset";
+    }, 2000);
+    return;
+  }
+  const azimuth = parseFloat(history[index].azimuthStr.replace('°', ''));
+  const offset = parseFloat(offsetHistory[0].offsetAzimuth);
+  const adjustedAzimuth = ((azimuth + offset) % 360).toFixed(6);
+
+  navigator.clipboard.writeText(adjustedAzimuth).then(() => {
+    button.textContent = "Copied";
+    setTimeout(() => {
+      button.textContent = "Copy with Offset";
+    }, 2000);
   });
 }
 

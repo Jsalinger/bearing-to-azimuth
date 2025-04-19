@@ -118,6 +118,20 @@ input::placeholder {
   background: darkred;
 }
 
+.adjust-btn {
+  background: #FF9800;
+  border: none;
+  color: white;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
+
+.adjust-btn:hover {
+  background: #F57C00;
+}
+
 .copied-label {
   font-size: 0.9rem;
   color: #4CAF50;
