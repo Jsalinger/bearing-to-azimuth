@@ -100,3 +100,32 @@ function removeEntry(index) {
   history.splice(index, 1);
   renderHistory();
 }
+
+function calculateOffset() {
+  const calculatedAzimuth = parseFloat(document.getElementById("calculatedAzimuth").value);
+  const surveyNs = document.getElementById("surveyNsSelect").value;
+  const surveyEw = document.getElementById("surveyEwSelect").value;
+  const surveyDeg = parseInt(document.getElementById("surveyBearingDeg").value) || 0;
+  const surveyMin = parseInt(document.getElementById("surveyBearingMin").value) || 0;
+  const surveySec = parseInt(document.getElementById("surveyBearingSec").value) || 0;
+
+  if (isNaN(calculatedAzimuth) || calculatedAzimuth < 0 || calculatedAzimuth > 360) {
+    document.getElementById("offsetOutput").textContent = "Invalid calculated azimuth.";
+    return;
+  }
+
+  if (surveyDeg > 90 || surveyMin >= 60 || surveySec >= 60 || surveyDeg < 0 || surveyMin < 0 || surveySec < 0) {
+    document.getElementById("offsetOutput").textContent = "Invalid survey bearing values.";
+    return;
+  }
+
+  const surveyAngle = surveyDeg + surveyMin / 60 + surveySec / 3600;
+  let surveyAzimuth;
+  if (surveyNs === 'N' && surveyEw === 'E') surveyAzimuth = surveyAngle;
+  else if (surveyNs === 'S' && surveyEw === 'E') surveyAzimuth = 180 - surveyAngle;
+  else if (surveyNs === 'S' && surveyEw === 'W') surveyAzimuth = 180 + surveyAngle;
+  else if (surveyNs === 'N' && surveyEw === 'W') surveyAzimuth = 360 - surveyAngle;
+
+  const offsetAzimuth = Math.abs(calculatedAzimuth - surveyAzimuth).toFixed(6);
+  document.getElementById("offsetOutput").textContent = `Offset Azimuth: ${offsetAzimuth}°`;
+}
