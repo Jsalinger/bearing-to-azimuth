@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <h1>Bearing to Azimuth Converter</h1>
+  <h2>Bearing to Azimuth Converter</h2>
   <div class="input-group">
     <label>
       <select id="nsSelect">
@@ -37,32 +37,28 @@
   <button class="export-btn" onclick="exportToCSV()">Export to CSV</button>
   <div class="output-container" id="output"></div>
 
-  <div class="offset-calculator">
-    <h2>Offset Calculator</h2>
-    <div class="input-group">
-      <label>
-        Calculated Azimuth:
-        <input type="number" id="calculatedAzimuth" placeholder="Enter calculated azimuth" min="0" max="360"
-          step="0.000001" />
-      </label>
-      <label>
-        Survey Bearing:
-        <input type="number" id="surveyBearingDeg" placeholder="Degrees" min="0" max="90" />
-        <input type="number" id="surveyBearingMin" placeholder="Minutes" min="0" max="59" />
-        <input type="number" id="surveyBearingSec" placeholder="Seconds" min="0" max="59" />
-        <select id="surveyNsSelect">
-          <option value="N">N</option>
-          <option value="S">S</option>
-        </select>
-        <select id="surveyEwSelect">
-          <option value="E">E</option>
-          <option value="W">W</option>
-        </select>
-      </label>
-    </div>
-    <button class="convert-btn" onclick="calculateOffset()">Calculate Offset</button>
-    <div class="offset-output" id="offsetOutput"></div>
+  <h2>Offset Calculator</h2>
+  <div class="input-group">
+    2 known points inverse:
+    <label>
+      <input type="number" id="calculatedAzimuth" placeholder="Decimal" min="0" max="360" step="0.000001" />
+    </label>
+    Survey:
+    <select id="surveyNsSelect">
+      <option value="N">N</option>
+      <option value="S">S</option>
+    </select>
+    <input type="number" id="surveyBearingDeg" placeholder="Degrees" min="0" max="90" />
+    <input type="number" id="surveyBearingMin" placeholder="Minutes" min="0" max="59" />
+    <input type="number" id="surveyBearingSec" placeholder="Seconds" min="0" max="59" />
+    <select id="surveyEwSelect">
+      <option value="E">E</option>
+      <option value="W">W</option>
+    </select>
+
   </div>
+  <button class="convert-btn" onclick="calculateOffset()">Calculate Offset</button>
+  <div class="offset-output" id="offsetOutput"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/geographiclib@1.52.0/geographiclib.min.js"></script>
   <script src="js/script.js"></script>
