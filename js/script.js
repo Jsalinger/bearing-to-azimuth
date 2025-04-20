@@ -45,12 +45,12 @@ function renderHistory() {
          ondragstart="dragStart(event, ${index})" 
          ondragover="dragOver(event)" ondrop="drop(event)">
       <div>
-      <div class="output-text">${item.bearingStr}</div>
-      <div class="output-text">${item.azimuthStr}</div>
+        <div class="output-text">${item.bearingStr}</div>
+        <div class="output-text">${item.azimuthStr}</div>
       </div>
       <div>
-        <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('Azimuth: ', '').replace('°', '')}', ${index})">Copy</button>
-        <button class="adjust-btn" onclick="copyAdjustedAzimuth(${index})">Copy with Offset</button>
+        <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('°', '')}', ${index})">Copy</button>
+        <button class="adjust-btn" onclick="copyWithFixedOffset(${index})">Copy w/ Fixed Offset</button>
         <button class="remove-btn" onclick="removeEntry(${index})">×</button>
       </div>
     </div>
@@ -66,6 +66,22 @@ function copyToClipboard(text, index) {
     if (copiedButton) {
       copiedButton.textContent = 'Copied';
     }
+  });
+}
+
+function copyWithFixedOffset(index) {
+  const fixedOffsetInput = document.getElementById("fixedOffset");
+  const fixedOffset = parseFloat(fixedOffsetInput.value) || 0;
+
+  const azimuth = parseFloat(history[index].azimuthStr.replace('°', ''));
+  const adjustedAzimuth = ((azimuth + fixedOffset) % 360).toFixed(6);
+
+  navigator.clipboard.writeText(adjustedAzimuth).then(() => {
+    const button = document.querySelectorAll('.output-line .adjust-btn')[index];
+    button.textContent = "Copied w/ Offset";
+    setTimeout(() => {
+      button.textContent = "Copy with Offset";
+    }, 2000);
   });
 }
 
