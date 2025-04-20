@@ -35,6 +35,10 @@
   </div>
   <button class="convert-btn" onclick="convertBearing()">Convert</button>
   <button class="export-btn" onclick="exportToCSV()">Export to CSV</button>
+  <label class="input-group">
+    Fixed Offset (Decimal):
+    <input type="number" id="fixedOffset" placeholder="Offset" step="0.000001" />
+  </label>
   <div class="output-container" id="output"></div>
 
   <h2>Offset Calculator</h2>
@@ -55,10 +59,6 @@
       <option value="E">E</option>
       <option value="W">W</option>
     </select>
-    <label>
-      Fixed Offset (Decimal):
-      <input type="number" id="fixedOffset" placeholder="Offset" step="0.000001" />
-    </label>
   </div>
   <button class="convert-btn" onclick="calculateOffset()">Calculate Offset</button>
   <div class="offset-output" id="offsetOutput"></div>

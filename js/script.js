@@ -50,8 +50,8 @@ function renderHistory() {
       </div>
       <div>
         <button class="copy-btn" id="copy-btn-${index}" onclick="copyToClipboard('${item.azimuthStr.replace('°', '')}', ${index})">Copy</button>
-        <button class="adjust-btn" onclick="copyWithFixedOffset(${index})">Copy w/ Fixed Offset</button>
-        <button class="adjust-btn" onclick="copyWithCalculatedOffset(${index})">Copy w/ Calculated Offset</button>
+        <button class="adjust-btn" id="fixed-offset-btn-${index}" onclick="copyWithFixedOffset(${index})">Copy FO</button>
+        <button class="adjust-btn" id="calculated-offset-btn-${index}" onclick="copyWithCalculatedOffset(${index})">Copy CO</button>
         <button class="remove-btn" onclick="removeEntry(${index})">×</button>
       </div>
     </div>
@@ -78,10 +78,10 @@ function copyWithFixedOffset(index) {
   const adjustedAzimuth = ((azimuth + fixedOffset) % 360).toFixed(6);
 
   navigator.clipboard.writeText(adjustedAzimuth).then(() => {
-    const button = document.querySelectorAll('.output-line .adjust-btn')[index];
-    button.textContent = "Copied w/ Fixed Offset";
+    const button = document.getElementById(`fixed-offset-btn-${index}`);
+    button.textContent = "Copied FO";
     setTimeout(() => {
-      button.textContent = "Copy w/ Fixed Offset";
+      button.textContent = "Copy FO";
     }, 2000);
   });
 }
@@ -97,10 +97,10 @@ function copyWithCalculatedOffset(index) {
   const adjustedAzimuth = ((azimuth + calculatedOffset) % 360).toFixed(6);
 
   navigator.clipboard.writeText(adjustedAzimuth).then(() => {
-    const button = document.querySelectorAll('.output-line .adjust-btn')[index];
-    button.textContent = "Copied w/ Calculated Offset";
+    const button = document.getElementById(`calculated-offset-btn-${index}`);
+    button.textContent = "Copied CO";
     setTimeout(() => {
-      button.textContent = "Copy w/ Calculated Offset";
+      button.textContent = "Copy CO";
     }, 2000);
   });
 }
@@ -110,7 +110,7 @@ function copyAdjustedAzimuth(index) {
   if (offsetHistory.length === 0) {
     button.textContent = "No offset yet";
     setTimeout(() => {
-      button.textContent = "Copy w/ Calculated Offset";
+      button.textContent = "Copy CO";
     }, 2000);
     return;
   }
@@ -119,9 +119,9 @@ function copyAdjustedAzimuth(index) {
   const adjustedAzimuth = ((azimuth + offset) % 360).toFixed(6);
 
   navigator.clipboard.writeText(adjustedAzimuth).then(() => {
-    button.textContent = "Copied w/ Calculated Offset";
+    button.textContent = "Copied CO";
     setTimeout(() => {
-      button.textContent = "Copy w/ Calculated Offset";
+      button.textContent = "Copy CO";
     }, 2000);
   });
 }
